@@ -41,6 +41,47 @@ public class ParadaService {
 			  throw new IllegalArgumentException("Parada no encontrada.");
 		}
 	}
+	
+	public Parada removeMonopatin(Long paradaId, Long monopatinId) {
+		Optional<Parada> paradaOpcional = repository.findById(paradaId);
+		if(paradaOpcional.isPresent()) {
+			Parada parada = paradaOpcional.get();
+			boolean eliminado = parada.getMonopatines().remove(monopatinId);
+			
+			if(!eliminado) {
+				throw new IllegalArgumentException("Monopatín no encontrado en esta parada.");
+			}
+			return repository.save(parada);
+		} else {
+			throw new IllegalArgumentException("Parada no encontrada.");
+		}
+	}
+	
+	public Long useMonopatin(Long paradaId) {
+		Optional<Parada> paradaOpcional = repository.findById(paradaId);
+		if(paradaOpcional.isPresent()) {
+			Parada parada = paradaOpcional.get();
+			
+			//chequea que haya monopatines en la parada
+			 if (!parada.getMonopatines().isEmpty()) {
+		            // Remueve y guarda el primer monopatín
+		            Long monopatinId = parada.getMonopatines().remove(0);
+		            repository.save(parada);
+		            return monopatinId;
+			 } else {
+		            throw new IllegalArgumentException("No hay monopatines en esta parada.");
+		        }
+		}else {
+			 throw new IllegalArgumentException("Parada no encontrada.");
+		}
+	}
+	
+	public ResponseEntity<String> delete(Long id) {
+		repository.deleteById(id);
+		return ResponseEntity.ok(null);
+	}
+
+	
 	public List<Parada> findParadaMasCercana(long latitud, long longitud) {
         return (List<Parada>) repository.findAll().stream().sorted((p1, p2) -> Double.compare(
                 calcularDistancia(latitud, longitud, p1.getLatitud(), p1.getLongitud()),

@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +46,7 @@ public class ParadaController {
 		return paradaService.save(dto);
 	}
 	
-	@PutMapping("/agregar-monopatin/{id}")
+	@PutMapping("/estacionar-monopatin/{id}")
 	public ResponseEntity<Parada> addMonopatin(@PathVariable Long paradaId, @RequestBody Long monopatinId) {
 		Parada paradaActualizada = paradaService.addMonopatin(paradaId, monopatinId);
 		return ResponseEntity.ok(paradaActualizada);
@@ -62,4 +65,31 @@ public class ParadaController {
         return gpsMonopatin.getLatitud() == gpsParada.getLatitud()
             && gpsMonopatin.getLongitud() == gpsParada.getLongitud();
     }
+
+	
+	//Recino monopatinId o saco uno cualquiera?
+	@PutMapping("/usar-monopatin/{id}")
+	public ResponseEntity<Parada> removeMonopatin(@PathVariable Long paradaId, @RequestBody Long monopatinId) {
+		Parada paradaActualizada = paradaService.removeMonopatin(paradaId, monopatinId);
+		return ResponseEntity.ok(paradaActualizada);
+	}
+	
+	@PutMapping("/usar-monopatin/{id}")
+	public ResponseEntity<Long> useMonopatin(@PathVariable Long paradaId) {
+		Long monopatinId = paradaService.useMonopatin(paradaId);
+		return ResponseEntity.ok(monopatinId);
+	}
+	
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id){
+		return paradaService.delete(id);
+	}
+	
+	//parada mas cercana que tenga al menos  1 monopatin (lat y long)
+	@GetMapping
+	public List<Parada> findParadaMasCercana(long latitud, long longitud){
+		return paradaService.findParadaMasCercana(latitud, longitud);
+	}
+
 }
