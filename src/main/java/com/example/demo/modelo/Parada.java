@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import main.app.model.GPS;
 
 @Entity
 public class Parada {
@@ -28,6 +29,8 @@ public class Parada {
 	
 	@Column
 	private double longitud;
+	@Column
+    private GPS gps;
 	
 	public Parada(String nombre, double latitud, double longitud) {
 		this.nombre = nombre;
@@ -58,7 +61,12 @@ public class Parada {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-
+	public GPS getGps() {
+	    return gps;
+	}
+	public void setGps(GPS gps) {
+	    this.gps = gps;
+	}
 	public List<Long> getMonopatines() {
 		return monopatines;
 	}

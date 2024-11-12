@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.DTO.PostParadaDTO;
+import com.example.demo.DTO.VerificacionParadaDTO;
 import com.example.demo.modelo.Parada;
 import com.example.demo.service.ParadaService;
+
+import main.app.dto.GPSDTO;
 
 
 @RestController
@@ -45,5 +48,18 @@ public class ParadaController {
 		Parada paradaActualizada = paradaService.addMonopatin(paradaId, monopatinId);
 		return ResponseEntity.ok(paradaActualizada);
 	}
-	
+	@PostMapping("/verificar-ubicacion")
+    public boolean verificarUbicacion(@RequestBody VerificacionParadaDTO verificacionParadaDTO) {
+        Parada parada = paradaService.findById(verificacionParadaDTO.getParadaId());
+        if (parada == null) {
+            throw new IllegalArgumentException("Parada no encontrada.");
+        }
+
+        GPSDTO gpsMonopatin = verificacionParadaDTO.getGps();
+        GPSDTO gpsParada = parada.getGps(); 
+
+        // Compara la latitud y longitud de la parada con la del monopatín
+        return gpsMonopatin.getLatitud() == gpsParada.getLatitud()
+            && gpsMonopatin.getLongitud() == gpsParada.getLongitud();
+    }
 }

@@ -56,5 +56,9 @@ public class ParadaService {
     public Boolean estaEnLaParada(long latitud, long longitud) {
         return repository.findByLatitudAndLongitud(latitud, longitud) != null;
     }
+
+	public Optional<Parada> findById(Long paradaId) {
+		return repository.findById(paradaId);
+	}
 	
 }
