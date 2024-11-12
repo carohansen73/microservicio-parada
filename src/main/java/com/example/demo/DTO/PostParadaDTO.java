@@ -5,13 +5,13 @@ import java.util.List;
 
 public class PostParadaDTO implements Serializable{
 	
-	private Long id;
+	private Integer id;
 	private String nombre;
 	private double latitud;
 	private double longitud;
 	private List<Long> monopatines;
 	
-	public PostParadaDTO(Long id, String nombre, double latitud, double longitud, List<Long> monopatines) {
+	public PostParadaDTO(Integer id, String nombre, double latitud, double longitud, List<Long> monopatines) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -20,10 +20,10 @@ public class PostParadaDTO implements Serializable{
 		this.monopatines = monopatines;
 	}
 	
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	public String getNombre() {

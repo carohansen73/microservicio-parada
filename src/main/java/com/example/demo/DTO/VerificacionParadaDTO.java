@@ -4,12 +4,12 @@ import main.app.dto.GPSDTO;
 
 public class VerificacionParadaDTO {
 	 private GPSDTO gps;
-	    private Long paradaId;
+	    private Integer paradaId;
 
 
 	    public VerificacionParadaDTO() {}
 
-	    public VerificacionParadaDTO(GPSDTO gps, Long paradaId) {
+	    public VerificacionParadaDTO(GPSDTO gps, Integer paradaId) {
 	        this.gps = gps;
 	        this.paradaId = paradaId;
 	    }
@@ -22,11 +22,11 @@ public class VerificacionParadaDTO {
 	        this.gps = gps;
 	    }
 
-	    public Long getParadaId() {
+	    public Integer getParadaId() {
 	        return paradaId;
 	    }
 
-	    public void setParadaId(Long paradaId) {
+	    public void setParadaId(Integer paradaId) {
 	        this.paradaId = paradaId;
 	    }
 }

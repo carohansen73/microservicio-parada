@@ -20,6 +20,7 @@ import com.example.demo.modelo.Parada;
 import com.example.demo.service.ParadaService;
 
 import main.app.dto.GPSDTO;
+import main.app.model.GPS;
 
 
 @RestController
@@ -45,44 +46,43 @@ public class ParadaController {
 	public ResponseEntity<String> save(@PathVariable PostParadaDTO dto) {
 		return paradaService.save(dto);
 	}
-	
-	@PutMapping("/estacionar-monopatin/{id}")
-	public ResponseEntity<Parada> addMonopatin(@PathVariable Long paradaId, @RequestBody Long monopatinId) {
+	/*
+	@PutMapping("/agregar-monopatin/{id}")
+	public ResponseEntity<Parada> addMonopatin(@PathVariable Integer paradaId, @RequestBody Long monopatinId) {
+		//{idParada}/agregarMonopatin/{idMonopatin}
 		Parada paradaActualizada = paradaService.addMonopatin(paradaId, monopatinId);
 		return ResponseEntity.ok(paradaActualizada);
-	}
+	}*/
+	
 	@PostMapping("/verificar-ubicacion")
-    public boolean verificarUbicacion(@RequestBody VerificacionParadaDTO verificacionParadaDTO) {
-        Parada parada = paradaService.findById(verificacionParadaDTO.getParadaId());
+    public boolean verificarUbicacion(@RequestBody GPSDTO gpsDTO) {
+        Parada parada = paradaService.findByGPS(gpsDTO);
         if (parada == null) {
+        	//TODO esto hace una respuesta o hayq ue hacer return responseEntity
             throw new IllegalArgumentException("Parada no encontrada.");
+        }else{
+        	return true;
         }
-
-        GPSDTO gpsMonopatin = verificacionParadaDTO.getGps();
-        GPSDTO gpsParada = parada.getGps(); 
-
-        // Compara la latitud y longitud de la parada con la del monopatín
-        return gpsMonopatin.getLatitud() == gpsParada.getLatitud()
-            && gpsMonopatin.getLongitud() == gpsParada.getLongitud();
     }
 
 	
 	//Recino monopatinId o saco uno cualquiera?
+	/*
 	@PutMapping("/usar-monopatin/{id}")
-	public ResponseEntity<Parada> removeMonopatin(@PathVariable Long paradaId, @RequestBody Long monopatinId) {
+	public ResponseEntity<Parada> removeMonopatin(@PathVariable Integer paradaId, @RequestBody Long monopatinId) {
 		Parada paradaActualizada = paradaService.removeMonopatin(paradaId, monopatinId);
 		return ResponseEntity.ok(paradaActualizada);
-	}
+	}*/
 	
 	@PutMapping("/usar-monopatin/{id}")
-	public ResponseEntity<Long> useMonopatin(@PathVariable Long paradaId) {
+	public ResponseEntity<Long> useMonopatin(@PathVariable Integer paradaId) {
 		Long monopatinId = paradaService.useMonopatin(paradaId);
 		return ResponseEntity.ok(monopatinId);
 	}
 	
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> delete(@PathVariable Long id){
+	public ResponseEntity<String> delete(@PathVariable Integer id){
 		return paradaService.delete(id);
 	}
 	
@@ -90,6 +90,11 @@ public class ParadaController {
 	@GetMapping
 	public List<Parada> findParadaMasCercana(long latitud, long longitud){
 		return paradaService.findParadaMasCercana(latitud, longitud);
+	}
+	
+	@PostMapping("/{idParada}/estacionarMonopatin/{idMonopatin}")
+	public ResponseEntity<?> estacionarMonopatin(@PathVariable Integer idParada, @PathVariable long idMonopatin){
+		return paradaService.estacionarMonoPatin(idParada,idMonopatin);
 	}
 
 }

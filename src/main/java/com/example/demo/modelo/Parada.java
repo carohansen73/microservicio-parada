@@ -4,33 +4,35 @@ import java.util.List;
 
 import com.example.demo.DTO.PostParadaDTO;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import main.app.model.GPS;
 
 @Entity
 public class Parada {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 	
 	@Column
 	private String nombre;
 	
-	@Column
-	private List<Long> monopatines;
+	@OneToMany(mappedBy = "idParada", fetch = FetchType.LAZY)
+	private List<MonopatinParada> monopatin;
 	
 	@Column
 	private double latitud;
 	
 	@Column
 	private double longitud;
-	@Column
-    private GPS gps;
 	
 	public Parada(String nombre, double latitud, double longitud) {
 		this.nombre = nombre;
@@ -46,11 +48,11 @@ public class Parada {
 		this.longitud = dto.getLongitud();
 	}
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -67,11 +69,15 @@ public class Parada {
 	public void setGps(GPS gps) {
 	    this.gps = gps;
 	}
-	public List<Long> getMonopatines() {
+	public List<Integer> getMonopatines() {
 		return monopatines;
 	}
+	
+	public void addMonopatin(Integer idMonopatin) {
+		this.monopatines.add(idMonopatin);
+	}
 
-	public void setMonopatines(List<Long> monopatines) {
+	public void setMonopatines(List<Integer> monopatines) {
 		this.monopatines = monopatines;
 	}
 
