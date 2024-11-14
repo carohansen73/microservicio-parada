@@ -13,7 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import main.app.model.GPS;
+
 
 @Entity
 public class Parada {
@@ -26,7 +26,7 @@ public class Parada {
 	private String nombre;
 	
 	@OneToMany(mappedBy = "idParada", fetch = FetchType.LAZY)
-	private List<MonopatinParada> monopatin;
+	private List<MonopatinParada> monopatines;
 	
 	@Column
 	private double latitud;
@@ -63,23 +63,6 @@ public class Parada {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	public GPS getGps() {
-	    return gps;
-	}
-	public void setGps(GPS gps) {
-	    this.gps = gps;
-	}
-	public List<Integer> getMonopatines() {
-		return monopatines;
-	}
-	
-	public void addMonopatin(Integer idMonopatin) {
-		this.monopatines.add(idMonopatin);
-	}
-
-	public void setMonopatines(List<Integer> monopatines) {
-		this.monopatines = monopatines;
-	}
 
 	public double getLatitud() {
 		return latitud;
@@ -95,6 +78,14 @@ public class Parada {
 
 	public void setLongitud(double longitud) {
 		this.longitud = longitud;
+	}
+	
+	public List<MonopatinParada> getMonopatines(){
+		return monopatines;
+	}
+	
+	public boolean tieneMonopatinesEstacionados() {
+	    return monopatines != null && !monopatines.isEmpty();
 	}
 
 	@Override

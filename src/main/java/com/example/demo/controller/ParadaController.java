@@ -19,9 +19,6 @@ import com.example.demo.DTO.VerificacionParadaDTO;
 import com.example.demo.modelo.Parada;
 import com.example.demo.service.ParadaService;
 
-import main.app.dto.GPSDTO;
-import main.app.model.GPS;
-
 
 @RestController
 @RequestMapping("paradas")
@@ -54,6 +51,9 @@ public class ParadaController {
 		return ResponseEntity.ok(paradaActualizada);
 	}*/
 	
+	/*
+	 * TODO recibe lat y long o un dto?
+	 
 	@PostMapping("/verificar-ubicacion")
     public boolean verificarUbicacion(@RequestBody GPSDTO gpsDTO) {
         Parada parada = paradaService.findByGPS(gpsDTO);
@@ -64,9 +64,9 @@ public class ParadaController {
         	return true;
         }
     }
-
+*/
 	
-	//Recino monopatinId o saco uno cualquiera?
+	//Recibo monopatinId o saco uno cualquiera?
 	/*
 	@PutMapping("/usar-monopatin/{id}")
 	public ResponseEntity<Parada> removeMonopatin(@PathVariable Integer paradaId, @RequestBody Long monopatinId) {

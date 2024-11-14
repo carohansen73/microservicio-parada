@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,10 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.DTO.MonopatinDTO;
 import com.example.demo.DTO.PostParadaDTO;
+import com.example.demo.Repository.MonopatinParadaRepository;
 import com.example.demo.Repository.ParadaRepository;
+import com.example.demo.controller.ParadaDTO;
+import com.example.demo.modelo.MonopatinParada;
 import com.example.demo.modelo.Parada;
 
 import main.app.dto.GPSDTO;
@@ -19,11 +23,16 @@ import main.app.dto.GPSDTO;
 @Service
 public class ParadaService {
 
-	
+	@Autowired
 	private final ParadaRepository repository;
+	@Autowired
+	private MonopatinParadaRepository monopatinParadaRepository;
+	@Autowired
 	private final RestTemplate restTemplate;
-	public ParadaService(ParadaRepository repository,RestTemplate restTemplate) {
+	
+	public ParadaService(ParadaRepository repository, MonopatinParadaRepository monopatinParadaRepository, RestTemplate restTemplate) {
 		this.repository = repository;
+		this.monopatinParadaRepository = monopatinParadaRepository;
 		this.restTemplate = restTemplate;
 	}
 	
@@ -48,6 +57,7 @@ public class ParadaService {
 		}
 	}
 	
+	
 	public Parada removeMonopatin(Integer paradaId, Integer monopatinId) {
 		Optional<Parada> paradaOpcional = repository.findById(paradaId);
 		if(paradaOpcional.isPresent()) {
@@ -63,27 +73,49 @@ public class ParadaService {
 		}
 	}
 	
-	public Long useMonopatin(Integer paradaId) {
+	
+	public Integer usarMonopatin(Integer paradaId) {
 		Optional<Parada> paradaOpcional = repository.findById(paradaId);
-		if(paradaOpcional.isPresent()) {
-			Parada parada = paradaOpcional.get();
-			
-			//chequea que haya monopatines en la parada
-			 if (!parada.getMonopatines().isEmpty()) {
-		            // Remueve y guarda el primer monopatín
-		            Long monopatinId = parada.getMonopatines().remove(0);
-		            repository.save(parada);
-		            return monopatinId;
-			 } else {
-		            throw new IllegalArgumentException("No hay monopatines en esta parada.");
-		        }
-		}else {
-			 throw new IllegalArgumentException("Parada no encontrada.");
+		
+		//Chequea que exista la parada
+		if(paradaOpcional.isEmpty()) {
+			throw new IllegalArgumentException("Parada no encontrada.");
 		}
+		Parada parada = paradaOpcional.get();
+		
+		//chequea que haya monopatines en la parada
+		 if (!parada.tieneMonopatinesEstacionados()) {
+			 throw new IllegalArgumentException("No hay monopatines en esta parada.");
+		 }
+		 
+        // Obtiene y remueve el primer monopatin
+		 MonopatinParada monopatinParada = parada.getMonopatines().remove(0);
+		 Integer monopatinID = monopatinParada.getIdMonopatin();
+		 
+		 //Actualiza la tabla monopatinParada
+		 monopatinParadaRepository.delete(monopatinParada);
+		 
+		 return monopatinID;
+		
 	}
 	
-	public ResponseEntity<String> delete(Integer id) {
-		repository.deleteById(id);
+	public ResponseEntity<String> delete(Integer paradaId) {
+		Optional<Parada> paradaOpcional = repository.findById(paradaId);  
+		
+		//la parada no existe
+		if(paradaOpcional.isEmpty()) {
+			throw new IllegalArgumentException("Parada no encontrada.");
+		}
+		
+		Parada parada = paradaOpcional.get();
+		
+		//si la parada tiene monopatines no la elimina
+		if(parada.tieneMonopatinesEstacionados()) {
+			 throw new IllegalArgumentException("No se puede eliminar la parada proque contiene monopatines.");
+		} 
+		
+		//Si no tiene monopatines la elimina
+		repository.deleteById(paradaId);
 		return ResponseEntity.ok(null);
 	}
 
