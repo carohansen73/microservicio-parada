@@ -75,8 +75,8 @@ public class ParadaController {
 	}*/
 	
 	@PutMapping("/usar-monopatin/{id}")
-	public ResponseEntity<Long> useMonopatin(@PathVariable Integer paradaId) {
-		Long monopatinId = paradaService.useMonopatin(paradaId);
+	public ResponseEntity<Integer> useMonopatin(@PathVariable Integer paradaId) {
+		Integer monopatinId = paradaService.usarMonopatin(paradaId);
 		return ResponseEntity.ok(monopatinId);
 	}
 	

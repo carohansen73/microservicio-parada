@@ -58,22 +58,6 @@ public class ParadaService {
 	}
 	
 	
-	public Parada removeMonopatin(Integer paradaId, Integer monopatinId) {
-		Optional<Parada> paradaOpcional = repository.findById(paradaId);
-		if(paradaOpcional.isPresent()) {
-			Parada parada = paradaOpcional.get();
-			boolean eliminado = parada.getMonopatines().remove(monopatinId);
-			
-			if(!eliminado) {
-				throw new IllegalArgumentException("Monopatín no encontrado en esta parada.");
-			}
-			return repository.save(parada);
-		} else {
-			throw new IllegalArgumentException("Parada no encontrada.");
-		}
-	}
-	
-	
 	public Integer usarMonopatin(Integer paradaId) {
 		Optional<Parada> paradaOpcional = repository.findById(paradaId);
 		
@@ -161,17 +145,19 @@ public class ParadaService {
 		MonopatinDTO monopatinDTO = response.getBody();
 		
 		//el monopatin no esta en la parada
-		if(!monopatinDTO.getGps().isInLocation(parada.getGps())) {
+		/*TODO ubicacion con dtoGps o lat y long?
+		 * if(!monopatinDTO.getGps().isInLocation(parada.getGps())) {
 			ResponseEntity<?> respuesta = new ResponseEntity(HttpStatus.BAD_REQUEST);
 			return respuesta;
 		}
+		*/
+		//Persiste en la tabla MonopatinParada
+		MonopatinParada monopatinParada = new MonopatinParada(idMonopatin, idParada);
+		this.monopatinParadaRepository.save(monopatinParada);
 		
-		parada.addMonopatin(idMonopatin);
 		this.repository.save(OptionalParada.get());	
 		ResponseEntity<?> respuesta = new ResponseEntity(HttpStatus.CREATED);
-		
-			
-		
+		return respuesta;
 	}
 	
 }
