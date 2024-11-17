@@ -1,64 +1,79 @@
 package com.example.demo.DTO;
 
-import main.app.model.GPS;
-import main.app.model.Parada;
+import jakarta.persistence.Column;
 
 public class MonopatinDTO {
 
 	private Integer id;
     private boolean isDisponible;
     private boolean isEncendido;
-    private GPS gps;
-    private Parada parada;
+    private double longitud;
+    private double latitud;
     
-	public MonopatinDTO(Integer id, boolean isDisponible, boolean isEncendido, GPS gps, Parada parada) {
+    public MonopatinDTO() {
+    	
+    }
+    
+	public MonopatinDTO(Integer id, boolean isDisponible, boolean isEncendido, double longitud, double latitud) {
 		super();
 		this.id = id;
 		this.isDisponible = isDisponible;
 		this.isEncendido = isEncendido;
-		this.gps = gps;
-		this.parada = parada;
+		this.longitud = longitud;
+		this.latitud = latitud;
 	}
+
 
 	public Integer getId() {
 		return id;
 	}
 
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
 
 	public boolean isDisponible() {
 		return isDisponible;
 	}
 
+
 	public void setDisponible(boolean isDisponible) {
 		this.isDisponible = isDisponible;
 	}
+
 
 	public boolean isEncendido() {
 		return isEncendido;
 	}
 
+
 	public void setEncendido(boolean isEncendido) {
 		this.isEncendido = isEncendido;
 	}
 
-	public GPS getGps() {
-		return gps;
+
+	public double getLongitud() {
+		return longitud;
 	}
 
-	public void setGps(GPS gps) {
-		this.gps = gps;
+
+	public void setLongitud(double longitud) {
+		this.longitud = longitud;
 	}
 
-	public Parada getParada() {
-		return parada;
+
+	public double getLatitud() {
+		return latitud;
 	}
 
-	public void setParada(Parada parada) {
-		this.parada = parada;
+
+	public void setLatitud(double latitud) {
+		this.latitud = latitud;
 	}
+    
+	
     
     
 }

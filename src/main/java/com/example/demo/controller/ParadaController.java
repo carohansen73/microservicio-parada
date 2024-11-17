@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.DTO.MonopatinDTO;
 import com.example.demo.DTO.PostParadaDTO;
-import com.example.demo.DTO.VerificacionParadaDTO;
 import com.example.demo.modelo.Parada;
 import com.example.demo.service.ParadaService;
+import com.example.demo.utils.Ubicacion;
 
 
 @RestController
@@ -43,6 +44,7 @@ public class ParadaController {
 	public ResponseEntity<String> save(@PathVariable PostParadaDTO dto) {
 		return paradaService.save(dto);
 	}
+	
 	/*
 	@PutMapping("/agregar-monopatin/{id}")
 	public ResponseEntity<Parada> addMonopatin(@PathVariable Integer paradaId, @RequestBody Long monopatinId) {
@@ -93,8 +95,8 @@ public class ParadaController {
 	}
 	
 	@PostMapping("/{idParada}/estacionarMonopatin/{idMonopatin}")
-	public ResponseEntity<?> estacionarMonopatin(@PathVariable Integer idParada, @PathVariable long idMonopatin){
-		return paradaService.estacionarMonoPatin(idParada,idMonopatin);
+	public ResponseEntity<?> estacionarMonopatin(@PathVariable Integer idParada, @PathVariable Integer idMonopatin){
+		return paradaService.estacionarMonopatin(idParada,idMonopatin);
 	}
 
 }

@@ -93,6 +93,13 @@ public class Parada {
 		return "Parada [id=" + id + ", nombre=" + nombre + ", monopatines=" + monopatines + ", latitud=" + latitud
 				+ ", longitud=" + longitud + "]";
 	}
+
+
+	public void addMonopatin(Integer monopatinId) {
+		MonopatinParada monopatin = new MonopatinParada(monopatinId,this.id);
+		this.monopatines.add(monopatin);
+		
+	}
 	
 	
 }

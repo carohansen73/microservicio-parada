@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,11 +15,10 @@ import com.example.demo.DTO.MonopatinDTO;
 import com.example.demo.DTO.PostParadaDTO;
 import com.example.demo.Repository.MonopatinParadaRepository;
 import com.example.demo.Repository.ParadaRepository;
-import com.example.demo.controller.ParadaDTO;
 import com.example.demo.modelo.MonopatinParada;
 import com.example.demo.modelo.Parada;
+import com.example.demo.utils.Ubicacion;
 
-import main.app.dto.GPSDTO;
 
 @Service
 public class ParadaService {
@@ -30,10 +30,14 @@ public class ParadaService {
 	@Autowired
 	private final RestTemplate restTemplate;
 	
-	public ParadaService(ParadaRepository repository, MonopatinParadaRepository monopatinParadaRepository, RestTemplate restTemplate) {
+	@Value("${baseURLMonopatin}")
+	private final String baseURLMonopatin;
+	
+	public ParadaService(ParadaRepository repository, MonopatinParadaRepository monopatinParadaRepository, RestTemplate restTemplate,String baseURLMonopatin) {
 		this.repository = repository;
 		this.monopatinParadaRepository = monopatinParadaRepository;
 		this.restTemplate = restTemplate;
+		this.baseURLMonopatin=baseURLMonopatin;
 	}
 	
 	public Iterable<Parada> getAll(){
@@ -46,11 +50,15 @@ public class ParadaService {
 		return new ResponseEntity<String>(HttpStatus.CREATED);
 	}
 	
+	public Optional<Parada> findById(Integer paradaId) {
+		return repository.findById(paradaId);
+	}
+	
 	public Parada addMonopatin(Integer paradaId, Integer monopatinId) {
 		Optional<Parada> paradaOpcional = repository.findById(paradaId);
 		if(paradaOpcional.isPresent()) {
 			Parada parada = paradaOpcional.get();
-			parada.getMonopatines().add(monopatinId);
+			parada.addMonopatin(monopatinId);
 			return repository.save(parada);
 		}else {
 			  throw new IllegalArgumentException("Parada no encontrada.");
@@ -121,17 +129,16 @@ public class ParadaService {
         return repository.findByLatitudAndLongitud(latitud, longitud) != null;
     }
 
-	public Optional<Parada> findById(Integer paradaId) {
-		return repository.findById(paradaId);
-	}
-
+    /*
 	public Parada findByGPS(GPSDTO gpsDTO) {
 		return repository.findByLatitudAndLongitud(gpsDTO.getLatitud(),gpsDTO.getLongitud());
 	}
-
+*/
 	public ResponseEntity<?> estacionarMonopatin(Integer idParada, Integer idMonopatin) {
-		//TODO hacer url
-		String url = "monopatines/" + idMonopatin;
+		//TODO setear el id de la parada en el monopatin
+		//se puede setear haciendo un llamado desde aca o
+		//que el servicio de monopatin haga esta request y si sale bien cambie el monopatin
+		String url = baseURLMonopatin + "/" + idMonopatin;
 		ResponseEntity<MonopatinDTO> response = restTemplate.getForEntity(url, MonopatinDTO.class);
 		Optional<Parada> OptionalParada = repository.findById(idParada);
 		
@@ -144,18 +151,19 @@ public class ParadaService {
 		Parada parada = OptionalParada.get();
 		MonopatinDTO monopatinDTO = response.getBody();
 		
+		Ubicacion ubicacionMonopatin = new Ubicacion(monopatinDTO.getLatitud(),monopatinDTO.getLongitud());
+		Ubicacion ubicacionParada = new Ubicacion(parada.getLatitud(),parada.getLongitud());
 		//el monopatin no esta en la parada
-		/*TODO ubicacion con dtoGps o lat y long?
-		 * if(!monopatinDTO.getGps().isInLocation(parada.getGps())) {
+		
+		if(!ubicacionMonopatin.isInLocation(ubicacionParada)) {
 			ResponseEntity<?> respuesta = new ResponseEntity(HttpStatus.BAD_REQUEST);
 			return respuesta;
 		}
-		*/
+
 		//Persiste en la tabla MonopatinParada
 		MonopatinParada monopatinParada = new MonopatinParada(idMonopatin, idParada);
 		this.monopatinParadaRepository.save(monopatinParada);
 		
-		this.repository.save(OptionalParada.get());	
 		ResponseEntity<?> respuesta = new ResponseEntity(HttpStatus.CREATED);
 		return respuesta;
 	}
