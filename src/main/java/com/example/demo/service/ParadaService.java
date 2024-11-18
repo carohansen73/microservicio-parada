@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -12,11 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.DTO.MonopatinDTO;
+import com.example.demo.DTO.ParadaDistanciaDTO;
 import com.example.demo.DTO.PostParadaDTO;
 import com.example.demo.Repository.MonopatinParadaRepository;
 import com.example.demo.Repository.ParadaRepository;
 import com.example.demo.modelo.MonopatinParada;
 import com.example.demo.modelo.Parada;
+import com.example.demo.utils.GenericObjectPatcher;
 import com.example.demo.utils.Ubicacion;
 
 
@@ -166,6 +169,32 @@ public class ParadaService {
 		
 		ResponseEntity<?> respuesta = new ResponseEntity(HttpStatus.CREATED);
 		return respuesta;
+	}
+	
+	public ResponseEntity<List<ParadaDistanciaDTO>> findWithinRange (double latitud, double longitud, double distanciaMax){
+		List<ParadaDistanciaDTO> results = this.repository.findWithinRange(latitud, longitud, distanciaMax);
+		return new ResponseEntity<List<ParadaDistanciaDTO>>(results,HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> modificarParada(Integer id, PostParadaDTO paradaDTO) {
+		if((paradaDTO.getId()!=null)) {
+			return new ResponseEntity<String>("No se puede editar id",HttpStatus.BAD_REQUEST);
+		}
+		
+		
+		try {
+			Parada parada = repository.findById(id).orElseThrow();
+			GenericObjectPatcher.patch(new Parada(paradaDTO), parada);
+			repository.save(parada);
+			return new ResponseEntity<String>(HttpStatus.OK);
+		}catch(NoSuchElementException e) {
+			return new ResponseEntity<String>("id Invalido",HttpStatus.NOT_FOUND);
+		}
+	}
+
+	public ResponseEntity<String> sacarMonopatin(Integer idMonopatin) {
+		this.monopatinParadaRepository.deleteById(idMonopatin);
+		return ResponseEntity.ok(null);
 	}
 	
 }

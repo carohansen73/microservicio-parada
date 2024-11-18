@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.DTO.MonopatinDTO;
+import com.example.demo.DTO.ParadaDTO;
+import com.example.demo.DTO.ParadaDistanciaDTO;
 import com.example.demo.DTO.PostParadaDTO;
+import com.example.demo.DTO.UbicacionDTO;
 import com.example.demo.modelo.Parada;
 import com.example.demo.service.ParadaService;
 import com.example.demo.utils.Ubicacion;
@@ -97,6 +101,21 @@ public class ParadaController {
 	@PostMapping("/{idParada}/estacionarMonopatin/{idMonopatin}")
 	public ResponseEntity<?> estacionarMonopatin(@PathVariable Integer idParada, @PathVariable Integer idMonopatin){
 		return paradaService.estacionarMonopatin(idParada,idMonopatin);
+	}
+	
+	@GetMapping("/disponibles")
+	public ResponseEntity<List<ParadaDistanciaDTO>> getCantEnParadasCercanas(@RequestBody UbicacionDTO ubicacion){
+		return this.paradaService.findWithinRange(ubicacion.getLatitud(),ubicacion.getLongitud(), 200);
+	}
+	
+	@PatchMapping("/{id}")
+	public ResponseEntity<?> modificarParada(@RequestBody PostParadaDTO parada,@PathVariable Integer id){
+		return this.paradaService.modificarParada(id,parada);
+	}
+	
+	@DeleteMapping("/monopatin/{id}")
+	public ResponseEntity<String> sacarMonopatin(@PathVariable Integer id){
+		return this.paradaService.sacarMonopatin(id);
 	}
 
 }
