@@ -20,7 +20,7 @@ public class Parada {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Integer idParada;
 	
 	@Column
 	private String nombre;
@@ -42,18 +42,18 @@ public class Parada {
 
 	
 	public Parada(PostParadaDTO dto) {
-		this.id = dto.getId(); 
+		this.idParada = dto.getId(); 
 		this.nombre = dto.getNombre();
 		this.latitud = dto.getLatitud();
 		this.longitud = dto.getLongitud();
 	}
 
-	public Integer getId() {
-		return id;
+	public Integer getidParada() {
+		return idParada;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setidParada(Integer id) {
+		this.idParada = id;
 	}
 
 	public String getNombre() {
@@ -90,13 +90,13 @@ public class Parada {
 
 	@Override
 	public String toString() {
-		return "Parada [id=" + id + ", nombre=" + nombre + ", monopatines=" + monopatines + ", latitud=" + latitud
+		return "Parada [id=" + idParada + ", nombre=" + nombre + ", monopatines=" + monopatines + ", latitud=" + latitud
 				+ ", longitud=" + longitud + "]";
 	}
 
 
 	public void addMonopatin(Integer monopatinId) {
-		MonopatinParada monopatin = new MonopatinParada(monopatinId,this.id);
+		MonopatinParada monopatin = new MonopatinParada(monopatinId,this.idParada);
 		this.monopatines.add(monopatin);
 		
 	}

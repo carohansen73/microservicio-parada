@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.*;
+
 import com.example.demo.DTO.MonopatinDTO;
 import com.example.demo.DTO.ParadaDTO;
 import com.example.demo.DTO.ParadaDistanciaDTO;
@@ -31,24 +37,88 @@ public class ParadaController {
 
 	@Autowired
 	private final ParadaService paradaService;
-	
-	
+
+
 	public ParadaController(ParadaService paradaService) {
 		super();
 		this.paradaService = paradaService;
 	}
 
+	@Operation(summary = "Obtener todas las paradas", 
+			description = "Obtiene una lista de todas las paradas registradas.")
+	@ApiResponse(responseCode = "200", description = "Lista de paradas")
 	@GetMapping("/")
 	public ResponseEntity<Iterable<Parada>> getAll() {
 		Iterable<Parada> paradas = paradaService.getAll();
-		return new ResponseEntity<Iterable<Parada>>(paradas,HttpStatus.OK);
+		return new ResponseEntity<>(paradas, HttpStatus.OK);
 	}
-	
+
+	@Operation(summary = "Crear una nueva parada", 
+			description = "Crea una nueva parada con los datos proporcionados.")
+	@ApiResponse(responseCode = "201", description = "Parada creada")
 	@PostMapping("/")
-	public ResponseEntity<String> save(@PathVariable PostParadaDTO dto) {
+	public ResponseEntity<String> save(@RequestBody PostParadaDTO dto) {
 		return paradaService.save(dto);
 	}
-	
+
+	@Operation(summary = "Usar un monopatín en una parada", 
+			description = "Permite asignar un monopatín a una parada.")
+	@ApiResponse(responseCode = "200", description = "ID del monopatín utilizado")
+	@PutMapping("/usar-monopatin/{id}")
+	public ResponseEntity<Integer> useMonopatin(@Parameter(description = "ID de la parada") 
+	@PathVariable Integer id) {
+		Integer monopatinId = paradaService.usarMonopatin(id);
+		return ResponseEntity.ok(monopatinId);
+	}
+
+	@Operation(summary = "Eliminar una parada", 
+			description = "Elimina la parada con el ID especificado.")
+	@ApiResponse(responseCode = "200", description = "Parada eliminada")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@Parameter(description = "ID de la parada a eliminar") 
+	@PathVariable Integer id) {
+		return paradaService.delete(id);
+	}
+
+	@Operation(summary = "Modificar los detalles de una parada", 
+			description = "Permite modificar los detalles de una parada existente.")
+	@ApiResponse(responseCode = "200", description = "Parada modificada")
+	@PatchMapping("/{id}")
+	public ResponseEntity<?> modificarParada(@Parameter(description = "Datos de la parada a modificar") 
+	@RequestBody PostParadaDTO parada, 
+	@Parameter(description = "ID de la parada") 
+	@PathVariable Integer id) {
+		return paradaService.modificarParada(id, parada);
+	}
+
+	@Operation(summary = "Estacionar un monopatín en una parada", 
+			description = "Estaciona un monopatín en la parada especificada.")
+	@ApiResponse(responseCode = "200", description = "Monopatín estacionado")
+	@PostMapping("/{idParada}/estacionarMonopatin/{idMonopatin}")
+	public ResponseEntity<?> estacionarMonopatin(@Parameter(description = "ID de la parada") 
+	@PathVariable Integer idParada, 
+	@Parameter(description = "ID del monopatín") 
+	@PathVariable Integer idMonopatin) {
+		return paradaService.estacionarMonopatin(idParada, idMonopatin);
+	}
+
+	@Operation(summary = "Obtener paradas cercanas con monopatines disponibles", 
+			description = "Obtiene una lista de paradas que tienen monopatines dentro de un rango especificado.")
+	@ApiResponse(responseCode = "200", description = "Lista de paradas cercanas con monopatines disponibles")
+	@GetMapping("/paradas")
+	public ResponseEntity<List<ParadaDistanciaDTO>> getCantEnParadasCercanas(@RequestBody UbicacionDTO ubicacion) {
+		return this.paradaService.findWithinRange(ubicacion.getLatitud(), ubicacion.getLongitud(), 500);
+	}
+
+	@Operation(summary = "Retirar un monopatín de una parada", 
+			description = "Permite retirar un monopatín de la parada especificada.")
+	@ApiResponse(responseCode = "200", description = "Monopatín retirado")
+	@DeleteMapping("/monopatin/{id}")
+	public ResponseEntity<String> sacarMonopatin(@Parameter(description = "ID del monopatín a retirar") 
+	@PathVariable Integer id) {
+		return paradaService.sacarMonopatin(id);
+	}
+
 	/*
 	@PutMapping("/agregar-monopatin/{id}")
 	public ResponseEntity<Parada> addMonopatin(@PathVariable Integer paradaId, @RequestBody Long monopatinId) {
@@ -56,10 +126,10 @@ public class ParadaController {
 		Parada paradaActualizada = paradaService.addMonopatin(paradaId, monopatinId);
 		return ResponseEntity.ok(paradaActualizada);
 	}*/
-	
+
 	/*
 	 * TODO recibe lat y long o un dto?
-	 
+
 	@PostMapping("/verificar-ubicacion")
     public boolean verificarUbicacion(@RequestBody GPSDTO gpsDTO) {
         Parada parada = paradaService.findByGPS(gpsDTO);
@@ -70,8 +140,8 @@ public class ParadaController {
         	return true;
         }
     }
-*/
-	
+	 */
+
 	//Recibo monopatinId o saco uno cualquiera?
 	/*
 	@PutMapping("/usar-monopatin/{id}")
@@ -79,43 +149,14 @@ public class ParadaController {
 		Parada paradaActualizada = paradaService.removeMonopatin(paradaId, monopatinId);
 		return ResponseEntity.ok(paradaActualizada);
 	}*/
-	
-	@PutMapping("/usar-monopatin/{id}")
-	public ResponseEntity<Integer> useMonopatin(@PathVariable Integer paradaId) {
-		Integer monopatinId = paradaService.usarMonopatin(paradaId);
-		return ResponseEntity.ok(monopatinId);
-	}
-	
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> delete(@PathVariable Integer id){
-		return paradaService.delete(id);
-	}
-	
+
+	/*
 	//parada mas cercana que tenga al menos  1 monopatin (lat y long)
 	@GetMapping
 	public List<Parada> findParadaMasCercana(long latitud, long longitud){
 		return paradaService.findParadaMasCercana(latitud, longitud);
-	}
-	
-	@PostMapping("/{idParada}/estacionarMonopatin/{idMonopatin}")
-	public ResponseEntity<?> estacionarMonopatin(@PathVariable Integer idParada, @PathVariable Integer idMonopatin){
-		return paradaService.estacionarMonopatin(idParada,idMonopatin);
-	}
-	
-	@GetMapping("/disponibles")
-	public ResponseEntity<List<ParadaDistanciaDTO>> getCantEnParadasCercanas(@RequestBody UbicacionDTO ubicacion){
-		return this.paradaService.findWithinRange(ubicacion.getLatitud(),ubicacion.getLongitud(), 200);
-	}
-	
-	@PatchMapping("/{id}")
-	public ResponseEntity<?> modificarParada(@RequestBody PostParadaDTO parada,@PathVariable Integer id){
-		return this.paradaService.modificarParada(id,parada);
-	}
-	
-	@DeleteMapping("/monopatin/{id}")
-	public ResponseEntity<String> sacarMonopatin(@PathVariable Integer id){
-		return this.paradaService.sacarMonopatin(id);
-	}
+	}*/
+
+	//estacionar o agregar un monopatin nuevo
 
 }

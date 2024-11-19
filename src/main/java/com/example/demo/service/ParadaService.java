@@ -3,7 +3,6 @@ package com.example.demo.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,8 +48,13 @@ public class ParadaService {
 	
 	public ResponseEntity<String> save(PostParadaDTO dto) {
 		Parada parada = new Parada(dto);
-		repository.save(parada);
-		return new ResponseEntity<String>(HttpStatus.CREATED);
+		
+		try {
+			repository.save(parada);;
+    		return new ResponseEntity<String>("agregado", HttpStatus.CREATED);
+    	}catch(IllegalArgumentException e) {
+    		return  new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    	}
 	}
 	
 	public Optional<Parada> findById(Integer paradaId) {
@@ -114,7 +118,7 @@ public class ParadaService {
 		return ResponseEntity.ok(null);
 	}
 
-	
+	/*
 	public List<Parada> findParadaMasCercana(long latitud, long longitud) {
 		//TODO revisar si se puede ordenar en la query
         return (List<Parada>) repository.findAll().stream().sorted((p1, p2) -> Double.compare(
@@ -122,7 +126,7 @@ public class ParadaService {
                 calcularDistancia(latitud, longitud, p2.getLatitud(), p2.getLongitud())
             ))
             .collect(Collectors.toList());
-    }
+    }*/
 
     private double calcularDistancia(long lat1, long lon1, double d, double e) {
         return Math.sqrt(Math.pow(d - lat1, 2) + Math.pow(e - lon1, 2));
@@ -137,7 +141,7 @@ public class ParadaService {
 		return repository.findByLatitudAndLongitud(gpsDTO.getLatitud(),gpsDTO.getLongitud());
 	}
 */
-	public ResponseEntity<?> estacionarMonopatin(Integer idParada, Integer idMonopatin) {
+	public ResponseEntity<String> estacionarMonopatin(Integer idParada, Integer idMonopatin) {
 		//TODO setear el id de la parada en el monopatin
 		//se puede setear haciendo un llamado desde aca o
 		//que el servicio de monopatin haga esta request y si sale bien cambie el monopatin
@@ -148,7 +152,7 @@ public class ParadaService {
 		
 		//la parada o el monopatin no existen
 		if(response.getStatusCode() != HttpStatus.OK || OptionalParada.isEmpty()) {
-			return (ResponseEntity<?>) ResponseEntity.notFound();
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
 		
 		Parada parada = OptionalParada.get();
@@ -159,16 +163,20 @@ public class ParadaService {
 		//el monopatin no esta en la parada
 		
 		if(!ubicacionMonopatin.isInLocation(ubicacionParada)) {
-			ResponseEntity<?> respuesta = new ResponseEntity(HttpStatus.BAD_REQUEST);
+			ResponseEntity<String> respuesta = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 			return respuesta;
 		}
 
 		//Persiste en la tabla MonopatinParada
 		MonopatinParada monopatinParada = new MonopatinParada(idMonopatin, idParada);
-		this.monopatinParadaRepository.save(monopatinParada);
 		
-		ResponseEntity<?> respuesta = new ResponseEntity(HttpStatus.CREATED);
-		return respuesta;
+		try {
+			this.monopatinParadaRepository.save(monopatinParada);
+			this.restTemplate.patchForObject(this.baseURLMonopatin + "/" + idMonopatin, monopatinParada, null);
+			return new ResponseEntity<String>("Guardado",HttpStatus.CREATED);
+		}catch(IllegalArgumentException e) {
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	public ResponseEntity<List<ParadaDistanciaDTO>> findWithinRange (double latitud, double longitud, double distanciaMax){
@@ -177,7 +185,7 @@ public class ParadaService {
 	}
 
 	public ResponseEntity<?> modificarParada(Integer id, PostParadaDTO paradaDTO) {
-		if((paradaDTO.getId()!=null)) {
+		if((paradaDTO.getId()!=null && paradaDTO.getId()!= id)) {
 			return new ResponseEntity<String>("No se puede editar id",HttpStatus.BAD_REQUEST);
 		}
 		
