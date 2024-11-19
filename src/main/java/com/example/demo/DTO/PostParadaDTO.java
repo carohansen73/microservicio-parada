@@ -7,11 +7,11 @@ public class PostParadaDTO implements Serializable{
 	
 	private Integer id;
 	private String nombre;
-	private double latitud;
-	private double longitud;
+	private Double latitud;
+	private Double longitud;
 	private List<Long> monopatines;
 	
-	public PostParadaDTO(Integer id, String nombre, double latitud, double longitud, List<Long> monopatines) {
+	public PostParadaDTO(Integer id, String nombre, Double latitud, Double longitud, List<Long> monopatines) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -32,16 +32,16 @@ public class PostParadaDTO implements Serializable{
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	public double getLatitud() {
+	public Double getLatitud() {
 		return latitud;
 	}
-	public void setLatitud(double latitud) {
+	public void setLatitud(Double latitud) {
 		this.latitud = latitud;
 	}
-	public double getLongitud() {
+	public Double getLongitud() {
 		return longitud;
 	}
-	public void setLongitud(double longitud) {
+	public void setLongitud(Double longitud) {
 		this.longitud = longitud;
 	}
 	

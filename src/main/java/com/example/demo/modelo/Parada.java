@@ -1,5 +1,6 @@
 package com.example.demo.modelo;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.example.demo.DTO.PostParadaDTO;
@@ -16,7 +17,7 @@ import jakarta.persistence.OneToMany;
 
 
 @Entity
-public class Parada {
+public class Parada implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,15 +26,18 @@ public class Parada {
 	@Column
 	private String nombre;
 	
-	@OneToMany(mappedBy = "idParada", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "parada", fetch = FetchType.LAZY)
 	private List<MonopatinParada> monopatines;
 	
 	@Column
-	private double latitud;
+	private Double latitud;
 	
 	@Column
-	private double longitud;
+	private Double longitud;
 	
+	public Parada() {
+		
+	}
 	public Parada(String nombre, double latitud, double longitud) {
 		this.nombre = nombre;
 		this.latitud = latitud;
@@ -51,9 +55,8 @@ public class Parada {
 	public Integer getidParada() {
 		return idParada;
 	}
-
-	public void setidParada(Integer id) {
-		this.idParada = id;
+	public void setIdParada(Integer idParada) {
+		this.idParada = idParada;
 	}
 
 	public String getNombre() {
@@ -84,6 +87,10 @@ public class Parada {
 		return monopatines;
 	}
 	
+	public void setMonopatines(List<MonopatinParada> monopatines) {
+		this.monopatines = monopatines;
+	}
+	
 	public boolean tieneMonopatinesEstacionados() {
 	    return monopatines != null && !monopatines.isEmpty();
 	}
@@ -96,7 +103,7 @@ public class Parada {
 
 
 	public void addMonopatin(Integer monopatinId) {
-		MonopatinParada monopatin = new MonopatinParada(monopatinId,this.idParada);
+		MonopatinParada monopatin = new MonopatinParada(monopatinId,this);
 		this.monopatines.add(monopatin);
 		
 	}

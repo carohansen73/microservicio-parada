@@ -16,13 +16,15 @@ public class MonopatinParada {
 	
 	@ManyToOne
 	@JoinColumn(name = "id", nullable = false)
-	private Integer idParada;
+	private Parada parada;
 	
-	
-	public MonopatinParada(Integer id, Integer idParada) {
+	public MonopatinParada() {
+	}
+	    
+	public MonopatinParada(Integer id, Parada parada) {
 		super();
 		this.idMonopatin = id;
-		this.idParada = idParada;
+		this.parada = parada;
 	}
 
 	public Integer getIdMonopatin() {
@@ -33,13 +35,14 @@ public class MonopatinParada {
 		this.idMonopatin = id;
 	}
 
-	public Integer getIdParada() {
-		return idParada;
+	public Parada getParada() {
+		return parada;
 	}
 
-	public void setIdParada(Integer idParada) {
-		this.idParada = idParada;
+	public void setParada(Parada parada) {
+		this.parada = parada;
 	}
+
 	
 	
 }

@@ -14,13 +14,13 @@ import com.example.demo.modelo.Parada;
 
 @Repository
 public interface ParadaRepository extends JpaRepository<Parada,Integer> {
-	
+	/*
 	@Query()
     List<Parada> findParadaMasCercana(@Param("latitud") double latitud, @Param("longitud") double longitud);
 	
 	@Query()
     Parada findByLatitudAndLongitud(double latitud, double longitud);
-	
+	*/
 	//native para usar la funcion de coseno
 	//TODO checkear si se convierte el resultado de la query nativa al dto
 	
@@ -37,15 +37,15 @@ public interface ParadaRepository extends JpaRepository<Parada,Integer> {
 	//a medida que se acerca a los polos
 	//se calcula la distancia con pitagoras, como si fuera un plano en vez de la superficie de un esferoide, lo que hace que no sea preciso para distancias grandes
 	//query anidada para no tener que realizar la calculacion de distancia tanto en SELECT como en WHERE
-	 @Query(value = "SELECT p.id, p.nombre, p.latitud, p.longitud, p.distancia, COUNT(mp.idMonopatin) as cantidad "
-	 		+ "FROM (SELECT p.id, p.nombre,p.latitud,p.longitud, SQRT(POWER(ABS((p.latitud - :latitud) * 111320), 2) + " +
+	 @Query(value = "SELECT p.idParada, p.nombre, p.latitud, p.longitud, p.distancia, COUNT(mp.idMonopatin) as cantidad "
+	 		+ "FROM (SELECT p.idParada, p.nombre,p.latitud,p.longitud, SQRT(POWER(ABS((p.latitud - :latitud) * 111320), 2) + " +
 	 		 														"POWER(ABS((p.longitud - :longitud) * COS(RADIANS(:latitud))), 2)) " +
 	 		 														"AS distancia " +
 	 		 		"FROM parada) as p " +
 	 		 "JOIN monopatinParada as mp " +
-	 		 "ON p.id = mp.idParada " +
+	 		 "ON p.idParada = mp.parada.idParada " +
 	 		 "WHERE p.distancia < :distanciaMax " +
-	 		 "GROUP BY p.id, p.nombre, p.latitud, p.longitud, p.distancia  "+
+	 		 "GROUP BY p.idParada, p.nombre, p.latitud, p.longitud, p.distancia  "+
 	 		 "ORDER BY p.distancia ", nativeQuery = true)
 	 List<ParadaDistanciaDTO> findWithinRange(double latitud, double longitud, double distanciaMax);
 }

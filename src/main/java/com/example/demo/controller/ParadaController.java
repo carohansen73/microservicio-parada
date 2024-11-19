@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,6 +53,18 @@ public class ParadaController {
 	public ResponseEntity<Iterable<Parada>> getAll() {
 		Iterable<Parada> paradas = paradaService.getAll();
 		return new ResponseEntity<>(paradas, HttpStatus.OK);
+	}
+	
+	@Operation(summary = "Obtener una parada", 
+			description = "Obtiene la parada con el id especificado.")
+	@GetMapping("/{id}")
+	public ResponseEntity<Parada> findById(@PathVariable Integer id) {
+		try {
+			return new ResponseEntity<Parada>(paradaService.findById(id).orElseThrow(),HttpStatus.OK);
+		}catch(NoSuchElementException e) {
+			
+			return new ResponseEntity<Parada>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@Operation(summary = "Crear una nueva parada", 

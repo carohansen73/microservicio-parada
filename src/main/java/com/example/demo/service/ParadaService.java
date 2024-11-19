@@ -33,13 +33,12 @@ public class ParadaService {
 	private final RestTemplate restTemplate;
 	
 	@Value("${baseURLMonopatin}")
-	private final String baseURLMonopatin;
+	private String baseURLMonopatin;
 	
-	public ParadaService(ParadaRepository repository, MonopatinParadaRepository monopatinParadaRepository, RestTemplate restTemplate,String baseURLMonopatin) {
+	public ParadaService(ParadaRepository repository, MonopatinParadaRepository monopatinParadaRepository, RestTemplate restTemplate) {
 		this.repository = repository;
 		this.monopatinParadaRepository = monopatinParadaRepository;
 		this.restTemplate = restTemplate;
-		this.baseURLMonopatin=baseURLMonopatin;
 	}
 	
 	public Iterable<Parada> getAll(){
@@ -131,11 +130,11 @@ public class ParadaService {
     private double calcularDistancia(long lat1, long lon1, double d, double e) {
         return Math.sqrt(Math.pow(d - lat1, 2) + Math.pow(e - lon1, 2));
     }
-	
+	/*
     public Boolean estaEnLaParada(long latitud, long longitud) {
         return repository.findByLatitudAndLongitud(latitud, longitud) != null;
     }
-
+	*/
     /*
 	public Parada findByGPS(GPSDTO gpsDTO) {
 		return repository.findByLatitudAndLongitud(gpsDTO.getLatitud(),gpsDTO.getLongitud());
@@ -168,7 +167,7 @@ public class ParadaService {
 		}
 
 		//Persiste en la tabla MonopatinParada
-		MonopatinParada monopatinParada = new MonopatinParada(idMonopatin, idParada);
+		MonopatinParada monopatinParada = new MonopatinParada(idMonopatin, parada);
 		
 		try {
 			this.monopatinParadaRepository.save(monopatinParada);
