@@ -1,5 +1,12 @@
-{"properties": [{
-  "name": "baseURLMonopatin",
-  "type": "java.lang.String",
-  "description": "A description for 'baseURLMonopatin'"
-}]}
+{"properties": [
+  {
+    "name": "baseURLMonopatin",
+    "type": "java.lang.String",
+    "description": "A description for 'baseURLMonopatin'"
+  },
+  {
+    "name": "pring.jpa.hibernate.naming.physical-strategy",
+    "type": "java.lang.String",
+    "description": "A description for 'pring.jpa.hibernate.naming.physical-strategy'"
+  }
+]}

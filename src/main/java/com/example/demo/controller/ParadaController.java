@@ -75,19 +75,20 @@ public class ParadaController {
 		return paradaService.save(dto);
 	}
 
-	@Operation(summary = "Usar un monopatín en una parada", 
-			description = "Permite asignar un monopatín a una parada.")
-	@ApiResponse(responseCode = "200", description = "ID del monopatín utilizado")
-	@PutMapping("/usar-monopatin/{id}")
+	@Operation(summary = "Obtener un monopatin de una parada", 
+			description = "Obtiene el id de un monopatin disponible en la parada especificada y lo saca de la parada.")
+	@ApiResponse(responseCode = "200", description = "ID del monopatín obtenido")
+	@PutMapping("/usar-monopatin/{idParada}")
 	public ResponseEntity<Integer> useMonopatin(@Parameter(description = "ID de la parada") 
-	@PathVariable Integer id) {
-		Integer monopatinId = paradaService.usarMonopatin(id);
+	@PathVariable Integer idParada) {
+		Integer monopatinId = paradaService.usarMonopatin(idParada);
 		return ResponseEntity.ok(monopatinId);
 	}
 
 	@Operation(summary = "Eliminar una parada", 
 			description = "Elimina la parada con el ID especificado.")
 	@ApiResponse(responseCode = "200", description = "Parada eliminada")
+	@ApiResponse(responseCode = "400", description = "La parada contiene monopatines y no puede ser eliminada")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> delete(@Parameter(description = "ID de la parada a eliminar") 
 	@PathVariable Integer id) {

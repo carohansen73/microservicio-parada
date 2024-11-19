@@ -1,7 +1,10 @@
 package com.example.demo.DTO;
 
-public class ParadaDistanciaDTO {
+import java.io.Serializable;
 
+public class ParadaDistanciaDTO implements Serializable{
+	
+	
 	private Integer id;
 	private String nombre;
 	private double latitud;
@@ -70,6 +73,8 @@ public class ParadaDistanciaDTO {
 	public void setDistancia(double distancia) {
 		this.distancia = distancia;
 	}
-	
+
 	
 }
+
+

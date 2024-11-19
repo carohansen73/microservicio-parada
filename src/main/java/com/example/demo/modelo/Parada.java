@@ -23,7 +23,6 @@ public class Parada implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer idParada;
 	
-	@Column
 	private String nombre;
 	
 	@OneToMany(mappedBy = "parada", fetch = FetchType.LAZY)

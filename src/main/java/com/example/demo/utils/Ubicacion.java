@@ -63,4 +63,13 @@ public class Ubicacion {
 	public boolean isInLocation(Ubicacion otraUbicacion) {
 		return this.isWithinDistance(otraUbicacion, 10);
 	}
+
+
+
+	@Override
+	public String toString() {
+		return "Ubicacion [longitud=" + longitud + ", latitud=" + latitud + "]";
+	}
+	
+	
 }
