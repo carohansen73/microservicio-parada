@@ -1,0 +1,234 @@
+openapi: 3.0.0
+info:
+  title: Parada API
+  description: API para la gestión de paradas y monopatines.
+  version: 1.0.0
+
+paths:
+  /paradas/:
+    get:
+      summary: Obtener todas las paradas
+      description: Obtiene una lista de todas las paradas registradas.
+      operationId: getAllParadas
+      tags:
+        - Parada
+      responses:
+        '200':
+          description: Lista de paradas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Parada'
+
+    post:
+      summary: Crear una nueva parada
+      description: Crea una nueva parada con los datos proporcionados.
+      operationId: saveParada
+      tags:
+        - Parada
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostParadaDTO'
+      responses:
+        '201':
+          description: Parada creada
+
+  /paradas/{id}:
+    get:
+      summary: Obtener una parada
+      description: Obtiene la parada con el ID especificado.
+      operationId: getParadaById
+      tags:
+        - Parada
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Parada encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parada'
+        '404':
+          description: Parada no encontrada
+
+    delete:
+      summary: Eliminar una parada
+      description: Elimina la parada con el ID especificado.
+      operationId: deleteParada
+      tags:
+        - Parada
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Parada eliminada
+
+    patch:
+      summary: Modificar los detalles de una parada
+      description: Permite modificar los detalles de una parada existente.
+      operationId: modificarParada
+      tags:
+        - Parada
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostParadaDTO'
+      responses:
+        '200':
+          description: Parada modificada
+
+  /paradas/usar-monopatin/{id}:
+    put:
+      summary: Usar un monopatín en una parada
+      description: Permite asignar un monopatín a una parada.
+      operationId: useMonopatin
+      tags:
+        - Parada
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ID del monopatín utilizado
+          content:
+            application/json:
+              schema:
+                type: integer
+
+  /paradas/{idParada}/estacionarMonopatin/{idMonopatin}:
+    post:
+      summary: Estacionar un monopatín en una parada
+      description: Estaciona un monopatín en la parada especificada.
+      operationId: estacionarMonopatin
+      tags:
+        - Parada
+      parameters:
+        - name: idParada
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: idMonopatin
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Monopatín estacionado
+
+  /paradas/paradas:
+    get:
+      summary: Obtener paradas cercanas con monopatines disponibles
+      description: Obtiene una lista de paradas que tienen monopatines dentro de un rango especificado.
+      operationId: getParadasCercanas
+      tags:
+        - Parada
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UbicacionDTO'
+      responses:
+        '200':
+          description: Lista de paradas cercanas con monopatines disponibles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ParadaDistanciaDTO'
+
+  /paradas/monopatin/{id}:
+    delete:
+      summary: Retirar un monopatín de una parada
+      description: Permite retirar un monopatín de la parada especificada.
+      operationId: sacarMonopatin
+      tags:
+        - Parada
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Monopatín retirado
+
+components:
+  schemas:
+    Parada:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        ubicacion:
+          $ref: '#/components/schemas/Ubicacion'
+
+
+    PostParadaDTO:
+      type: object
+      properties:
+        nombre:
+          type: string
+        ubicacion:
+          $ref: '#/components/schemas/Ubicacion'
+
+    ParadaDistanciaDTO:
+      type: object
+      properties:
+        paradaId:
+          type: integer
+        distancia:
+          type: number
+          format: float
+
+
+    UbicacionDTO:
+      type: object
+      properties:
+        latitud:
+          type: number
+          format: double
+        longitud:
+          type: number
+          format: double
+
+    Ubicacion:
+      type: object
+      properties:
+        latitud:
+          type: number
+          format: double
+        longitud:
+          type: number
+          format: double
