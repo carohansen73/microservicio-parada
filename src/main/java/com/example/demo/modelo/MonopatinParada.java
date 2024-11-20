@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 
 @Entity
 public class MonopatinParada {
@@ -45,6 +43,12 @@ public class MonopatinParada {
 	public void setParada(Parada parada) {
 		this.parada = parada;
 	}
+	
+	 public void setParadaById(Integer idParada) {
+	        Parada parada = new Parada();
+	        parada.setIdParada(idParada);
+	        this.parada = parada;
+	    }
 
 	
 	

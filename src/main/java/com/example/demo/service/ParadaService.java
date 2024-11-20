@@ -22,6 +22,7 @@ import com.example.demo.DTO.ParadaDistanciaDTO;
 import com.example.demo.DTO.PostParadaDTO;
 import com.example.demo.Repository.MonopatinParadaRepository;
 import com.example.demo.Repository.ParadaRepository;
+import com.example.demo.Security.TokenHandler;
 import com.example.demo.modelo.MonopatinParada;
 import com.example.demo.modelo.Parada;
 import com.example.demo.utils.GenericObjectPatcher;
@@ -41,6 +42,8 @@ public class ParadaService {
 	private final RestTemplate restTemplate;
 	@Autowired
 	private WebClient webClient;
+	@Autowired
+	private TokenHandler tokenHandler;
 	
 	@Value("${baseURLMonopatin}")
 	private String baseURLMonopatin;
@@ -150,51 +153,28 @@ public class ParadaService {
 		return repository.findByLatitudAndLongitud(gpsDTO.getLatitud(),gpsDTO.getLongitud());
 	}
 */
-	public ResponseEntity<String> estacionarMonopatin(Integer idParada, Integer idMonopatin) {
-		//TODO setear el id de la parada en el monopatin
-		//se puede setear haciendo un llamado desde aca o
-		//que el servicio de monopatin haga esta request y si sale bien cambie el monopatin
-		String url = baseURLMonopatin + "/" + idMonopatin;
-		ResponseEntity<MonopatinDTO> response = restTemplate.getForEntity(url, MonopatinDTO.class);
-		Optional<Parada> OptionalParada = repository.findById(idParada);
+	public ResponseEntity<?> estacionarMonopatin(MonopatinDTO monopatin) {
 		
 		
-		//la parada o el monopatin no existen
-		if(response.getStatusCode() != HttpStatus.OK || OptionalParada.isEmpty()) {
-			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-		}
-		
-		Parada parada = OptionalParada.get();
-		MonopatinDTO monopatinDTO = response.getBody();
-		
-		Ubicacion ubicacionMonopatin = new Ubicacion(monopatinDTO.getLatitud(),monopatinDTO.getLongitud());
-		Ubicacion ubicacionParada = new Ubicacion(parada.getLatitud(),parada.getLongitud());
-		//el monopatin no esta en la parada
-		
-
-		if(!ubicacionMonopatin.isInLocation(ubicacionParada)) {
-			ResponseEntity<String> respuesta = new ResponseEntity<String>("El monopatin no se encuentra en la parada",HttpStatus.BAD_REQUEST);
+		//paradas dentro de los 10 metros de rango
+		List<Tuple> tuplasOrdenadas = this.repository.findWithinRange(monopatin.getLatitud(), monopatin.getLongitud(),10);
+		if(tuplasOrdenadas.isEmpty()) {
+			ResponseEntity<String> respuesta = new ResponseEntity<String>("El monopatin no se encuentra en una parada",HttpStatus.BAD_REQUEST);
 			return respuesta;
 		}
-
-		//Persiste en la tabla MonopatinParada
-		MonopatinParada monopatinParada = new MonopatinParada(idMonopatin, parada);
 		
-		try {
-			this.monopatinParadaRepository.save(monopatinParada);
-			CambiarParadaDTO  cambiarParadaDTO = new CambiarParadaDTO(parada.getidParada());
-			//HttpEntity<CambiarParadaDTO> requestEntity = new HttpEntity<>(cambiarParadaDTO);
-			//System.out.println(this.baseURLMonopatin + "/" + idMonopatin);
-			//System.out.println(this.restTemplate.exchange(this.baseURLMonopatin + "/" + idMonopatin,HttpMethod.PATCH, requestEntity,String.class));
-			
-			//blockea la ejecucion hasta que retorne? no asincronico
-			this.webClient.method(HttpMethod.PATCH).uri(this.baseURLMonopatin + "/" + idMonopatin).bodyValue(cambiarParadaDTO).retrieve().bodyToMono(String.class).block();
-			//this.restTemplate.patchForObject(this.baseURLMonopatin + "/" + idMonopatin, monopatinParada, String.class);
-			return new ResponseEntity<String>("Guardado",HttpStatus.CREATED);
-		}catch(IllegalArgumentException e) {
-			System.out.println(e.getMessage());
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
+		
+		
+		Integer idParada = (Integer) tuplasOrdenadas.get(0).get("idParada");
+		MonopatinParada monopatinParada = new MonopatinParada();
+		monopatinParada.setIdMonopatin(monopatin.getIdMonopatin());
+		monopatinParada.setParadaById(idParada);
+		
+		//Persiste en la tabla MonopatinParada
+		this.monopatinParadaRepository.save(monopatinParada);
+		//Devuelve en que parada se estaciono
+		ResponseEntity<Integer> respuesta = new ResponseEntity<Integer>(idParada,HttpStatus.OK);
+		return respuesta;
 	}
 	
 	public ResponseEntity<List<ParadaDistanciaDTO>> findWithinRange (double latitud, double longitud, double distanciaMax){

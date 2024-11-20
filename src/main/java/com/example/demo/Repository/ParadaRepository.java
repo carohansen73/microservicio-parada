@@ -42,7 +42,7 @@ public interface ParadaRepository extends JpaRepository<Parada,Integer> {
 	//query anidada para no tener que realizar la calculacion de distancia tanto en SELECT como en WHERE
 	 @Query(value = "SELECT p.idParada, p.nombre, p.latitud, p.longitud, p.distancia, COUNT(mp.idMonopatin) as cantidad "
 	 		+ "FROM (SELECT pp.idParada, pp.nombre,pp.latitud,pp.longitud, SQRT(POWER(ABS((pp.latitud - :latitud) * 111320), 2) + " +
-	 		 														"POWER(ABS( (pp.longitud - :longitud) * COS(RADIANS(:latitud) ) * 40075), 2)) " +
+	 		 														"POWER(ABS( (pp.longitud - :longitud) * COS(RADIANS(:latitud)) * 40075000 / 360), 2)) " +
 	 		 														"AS distancia " +
 	 		 		"FROM parada as pp) as p " +
 	 		 "JOIN monopatinparada as mp " +

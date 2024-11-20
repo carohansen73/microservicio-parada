@@ -106,15 +106,14 @@ public class ParadaController {
 		return paradaService.modificarParada(id, parada);
 	}
 
-	@Operation(summary = "Estacionar un monopatín en una parada", 
-			description = "Estaciona un monopatín en la parada especificada.")
+	@Operation(summary = "Estacionar un monopatín", 
+			description = "Estaciona un monopatín la parada mas cercana.")
 	@ApiResponse(responseCode = "200", description = "Monopatín estacionado")
-	@PostMapping("/{idParada}/estacionarMonopatin/{idMonopatin}")
-	public ResponseEntity<?> estacionarMonopatin(@Parameter(description = "ID de la parada") 
-	@PathVariable Integer idParada, 
-	@Parameter(description = "ID del monopatín") 
-	@PathVariable Integer idMonopatin) {
-		return paradaService.estacionarMonopatin(idParada, idMonopatin);
+	@PostMapping("/estacionarMonopatin")
+	public ResponseEntity<?> estacionarMonopatin(
+	@Parameter(description = "Monopatin a Estacionar") 
+	@RequestBody MonopatinDTO monopatin) {
+		return paradaService.estacionarMonopatin(monopatin);
 	}
 
 	@Operation(summary = "Obtener paradas cercanas con monopatines disponibles", 

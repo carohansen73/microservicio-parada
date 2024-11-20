@@ -3,7 +3,7 @@ package com.example.demo.DTO;
 import java.io.Serializable;
 public class MonopatinDTO implements Serializable{
 
-	private Integer id;
+	private Integer idMonopatin;
     private boolean isDisponible;
     private boolean isEncendido;
     private double longitud;
@@ -17,7 +17,7 @@ public class MonopatinDTO implements Serializable{
 	public MonopatinDTO(Integer id, boolean isDisponible, boolean isEncendido, double longitud, double latitud,
 			Integer idParada) {
 		super();
-		this.id = id;
+		this.idMonopatin = id;
 		this.isDisponible = isDisponible;
 		this.isEncendido = isEncendido;
 		this.longitud = longitud;
@@ -25,12 +25,12 @@ public class MonopatinDTO implements Serializable{
 		this.idParada = idParada;
 	}
 
-	public Integer getId() {
-		return id;
+	public Integer getIdMonopatin() {
+		return idMonopatin;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setIdMonopatin(Integer id) {
+		this.idMonopatin = id;
 	}
 
 	public boolean isDisponible() {
