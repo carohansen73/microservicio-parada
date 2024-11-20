@@ -1,5 +1,7 @@
 package com.example.demo.modelo;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -15,7 +17,8 @@ public class MonopatinParada {
 	
 	
 	@ManyToOne
-	@JoinColumn(name = "id", nullable = false)
+	@JoinColumn(name = "idParada", nullable = false)
+	@JsonBackReference
 	private Parada parada;
 	
 	public MonopatinParada() {

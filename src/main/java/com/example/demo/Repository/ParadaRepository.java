@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.DTO.ParadaDistanciaDTO;
 import com.example.demo.modelo.Parada;
 
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.Tuple;
+
 
 @Repository
 public interface ParadaRepository extends JpaRepository<Parada,Integer> {
@@ -38,14 +41,14 @@ public interface ParadaRepository extends JpaRepository<Parada,Integer> {
 	//se calcula la distancia con pitagoras, como si fuera un plano en vez de la superficie de un esferoide, lo que hace que no sea preciso para distancias grandes
 	//query anidada para no tener que realizar la calculacion de distancia tanto en SELECT como en WHERE
 	 @Query(value = "SELECT p.idParada, p.nombre, p.latitud, p.longitud, p.distancia, COUNT(mp.idMonopatin) as cantidad "
-	 		+ "FROM (SELECT p.idParada, p.nombre,p.latitud,p.longitud, SQRT(POWER(ABS((p.latitud - :latitud) * 111320), 2) + " +
-	 		 														"POWER(ABS((p.longitud - :longitud) * COS(RADIANS(:latitud))), 2)) " +
+	 		+ "FROM (SELECT pp.idParada, pp.nombre,pp.latitud,pp.longitud, SQRT(POWER(ABS((pp.latitud - :latitud) * 111320), 2) + " +
+	 		 														"POWER(ABS( (pp.longitud - :longitud) * COS(RADIANS(:latitud) ) * 40075), 2)) " +
 	 		 														"AS distancia " +
-	 		 		"FROM parada) as p " +
-	 		 "JOIN monopatinParada as mp " +
-	 		 "ON p.idParada = mp.parada.idParada " +
+	 		 		"FROM parada as pp) as p " +
+	 		 "JOIN monopatinparada as mp " +
+	 		 "ON p.idParada = mp.idParada " +
 	 		 "WHERE p.distancia < :distanciaMax " +
 	 		 "GROUP BY p.idParada, p.nombre, p.latitud, p.longitud, p.distancia  "+
 	 		 "ORDER BY p.distancia ", nativeQuery = true)
-	 List<ParadaDistanciaDTO> findWithinRange(double latitud, double longitud, double distanciaMax);
+	 List<Tuple> findWithinRange(double latitud, double longitud, double distanciaMax);
 }
