@@ -105,7 +105,7 @@ public class ParadaController {
 	@PathVariable Integer id) {
 		return paradaService.modificarParada(id, parada);
 	}
-
+	
 	@Operation(summary = "Estacionar un monopatín", 
 			description = "Estaciona un monopatín la parada mas cercana.")
 	@ApiResponse(responseCode = "200", description = "Monopatín estacionado")
