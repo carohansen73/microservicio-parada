@@ -4,64 +4,66 @@ import java.io.Serializable;
 public class MonopatinDTO implements Serializable{
 
 	private Integer idMonopatin;
-    private boolean isDisponible;
-    private boolean isEncendido;
-    private double longitud;
-    private double latitud;
+    private Boolean disponible;
+    private Boolean encendido;
+    private Double longitud;
+    private Double latitud;
     private Integer idParada;
+    private Boolean mantenimiento;
     
     public MonopatinDTO() {
     	
     }
 
-	public MonopatinDTO(Integer id, boolean isDisponible, boolean isEncendido, double longitud, double latitud,
-			Integer idParada) {
+	public MonopatinDTO(Integer idMonopatin, Boolean disponible, Boolean encendido, Double longitud, Double latitud,
+			Integer idParada, Boolean mantenimiento) {
 		super();
-		this.idMonopatin = id;
-		this.isDisponible = isDisponible;
-		this.isEncendido = isEncendido;
+		this.idMonopatin = idMonopatin;
+		this.disponible = disponible;
+		this.encendido = encendido;
 		this.longitud = longitud;
 		this.latitud = latitud;
 		this.idParada = idParada;
+		this.mantenimiento = mantenimiento;
 	}
 
 	public Integer getIdMonopatin() {
 		return idMonopatin;
 	}
 
-	public void setIdMonopatin(Integer id) {
-		this.idMonopatin = id;
+	public void setIdMonopatin(Integer idMonopatin) {
+		this.idMonopatin = idMonopatin;
 	}
 
-	public boolean isDisponible() {
-		return isDisponible;
+	public Boolean getDisponible() {
+		return disponible;
 	}
 
-	public void setDisponible(boolean isDisponible) {
-		this.isDisponible = isDisponible;
+	public void setDisponible(Boolean disponible) {
+		this.disponible = disponible;
 	}
 
-	public boolean isEncendido() {
-		return isEncendido;
+	public Boolean getEncendido() {
+		return encendido;
 	}
 
-	public void setEncendido(boolean isEncendido) {
-		this.isEncendido = isEncendido;
+	public void setEncendido(Boolean encendido) {
+		this.encendido = encendido;
 	}
 
-	public double getLongitud() {
+	public Double getLongitud() {
 		return longitud;
 	}
 
-	public void setLongitud(double longitud) {
+	public void setLongitud(Double longitud) {
 		this.longitud = longitud;
 	}
 
-	public double getLatitud() {
+	public Double getLatitud() {
 		return latitud;
 	}
 
-	public void setLatitud(double latitud) {
+	public void setLatitud(Double latitud) {
 		this.latitud = latitud;
 	}
 
@@ -72,6 +74,16 @@ public class MonopatinDTO implements Serializable{
 	public void setIdParada(Integer idParada) {
 		this.idParada = idParada;
 	}
+
+	public Boolean getMantenimiento() {
+		return mantenimiento;
+	}
+
+	public void setMantenimiento(Boolean mantenimiento) {
+		this.mantenimiento = mantenimiento;
+	}
+
+	
     
 	
     

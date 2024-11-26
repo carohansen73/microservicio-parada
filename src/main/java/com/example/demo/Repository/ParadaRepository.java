@@ -45,7 +45,7 @@ public interface ParadaRepository extends JpaRepository<Parada,Integer> {
 	 		 														"POWER(ABS( (pp.longitud - :longitud) * COS(RADIANS(:latitud)) * 40075000 / 360), 2)) " +
 	 		 														"AS distancia " +
 	 		 		"FROM parada as pp) as p " +
-	 		 "JOIN monopatinparada as mp " +
+	 		 "LEFT JOIN monopatinparada as mp " +
 	 		 "ON p.idParada = mp.idParada " +
 	 		 "WHERE p.distancia < :distanciaMax " +
 	 		 "GROUP BY p.idParada, p.nombre, p.latitud, p.longitud, p.distancia  "+

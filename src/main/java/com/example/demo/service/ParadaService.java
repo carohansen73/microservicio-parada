@@ -85,28 +85,32 @@ public class ParadaService {
 	}
 	
 	
-	public Integer usarMonopatin(Integer paradaId) {
+	public ResponseEntity<?> usarMonopatin(Integer paradaId) {
 		Optional<Parada> paradaOpcional = repository.findById(paradaId);
 		
-		//Chequea que exista la parada
-		if(paradaOpcional.isEmpty()) {
-			throw new IllegalArgumentException("Parada no encontrada.");
+		try {
+			//Chequea que exista la parada
+			if(paradaOpcional.isEmpty()) {
+				throw new IllegalArgumentException("Parada no encontrada.");
+			}
+			Parada parada = paradaOpcional.get();
+			
+			//chequea que haya monopatines en la parada
+			if (!parada.tieneMonopatinesEstacionados()) {
+				throw new IllegalArgumentException("No hay monopatines en esta parada.");
+			}
+			
+			// Obtiene y remueve el primer monopatin
+			MonopatinParada monopatinParada = parada.getMonopatines().remove(0);
+			Integer monopatinID = monopatinParada.getIdMonopatin();
+			
+			//Actualiza la tabla monopatinParada
+			monopatinParadaRepository.delete(monopatinParada);
+			
+			return new ResponseEntity<Integer>(monopatinID,HttpStatus.OK);
+		}catch(IllegalArgumentException e) {
+			return new ResponseEntity<String>(e.getMessage(),HttpStatus.NOT_FOUND); 
 		}
-		Parada parada = paradaOpcional.get();
-		
-		//chequea que haya monopatines en la parada
-		 if (!parada.tieneMonopatinesEstacionados()) {
-			 throw new IllegalArgumentException("No hay monopatines en esta parada.");
-		 }
-		 
-        // Obtiene y remueve el primer monopatin
-		 MonopatinParada monopatinParada = parada.getMonopatines().remove(0);
-		 Integer monopatinID = monopatinParada.getIdMonopatin();
-		 
-		 //Actualiza la tabla monopatinParada
-		 monopatinParadaRepository.delete(monopatinParada);
-		 
-		 return monopatinID;
 		
 	}
 	
@@ -214,9 +218,10 @@ public class ParadaService {
 		}
 	}
 
+	/*
 	public ResponseEntity<String> sacarMonopatin(Integer idMonopatin) {
 		this.monopatinParadaRepository.deleteById(idMonopatin);
 		return ResponseEntity.ok(null);
 	}
-	
+	*/
 }
